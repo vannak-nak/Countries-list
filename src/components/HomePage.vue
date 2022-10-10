@@ -1,8 +1,14 @@
 <template>
-  <div class="search">
-                <input class="search-txt" type="data" placeholder="Search here" v-model="search">
-   </div>
   <div class="wrap">
+    <div class="header">
+        <div class="profile">
+          <img alt="ai" src="../assets/profile2.jpg">
+          <P class="name">THEA VANNAK</P>
+        </div>
+        <div class="search">
+          <input class="search-txt" type="data" placeholder="Search here" v-model="search">
+        </div>
+  </div>   
     <div class="main-containt">
       <h2>List countries in the world</h2>
       <table style="width:100%">
@@ -852,14 +858,44 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h2{
-  margin-bottom: 20px;
+.header{
+    padding: 20px 20px 0 20px;
+    position: relative;
+    border: 1px solid #ccc;
+    border-bottom: 0;
+}
+.profile{
+    display: flex;
+    justify-content: left;
+}
+.profile img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+.name{
+    display: flex;
+    align-items: center;
+}
+.search {
+    position: absolute;
+    right: 20px;
+    top: 25px;
+}
+.search-txt{
+    width: 210px;
+    padding: 10px 10px;
 }
 .main-containt{
   padding: 0 20px 20px 20px;
   border: 1px solid #ccc;
   border-top: 0;
   margin-bottom: 50px;
+}
+h2{
+  margin-bottom: 20px;
 }
 table{
   background: #f3f3f3;

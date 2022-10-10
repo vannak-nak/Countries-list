@@ -1,17 +1,14 @@
 <template>
-  <HeaderBlock></HeaderBlock>
   <HomePage></HomePage>
 </template>
 
 <script lang="ts">
 import HomePage from "./components/HomePage.vue";
-import HeaderBlock from "./components/HeaderBlock.vue";
 
 export default {
   name: "App",
   components: {
-    HomePage,
-    HeaderBlock,
+    HomePage
   },
 };
 </script>
