@@ -11,14 +11,14 @@
   </div>   
   <div class="main-containt">
     <h2>List countries in the world</h2>
-    <table style="width:100%">
+    <table>
       <tr>
         <th>Flag</th>
-        <th style="width:30%">Name</th>
-        <th>2 charchter Country</th>
-        <th>3 charchter Country Code</th>
-        <th>Native Name</th> 
-        <th>Alternative</th>
+        <th @click="sortDataTable(i++)" class="tile-name">Name</th>
+        <th @click="sortDataTable(i++)">2 charchter Country</th>
+        <th @click="sortDataTable(i++)">3 charchter Country Code</th>
+        <th @click="sortDataTable(i++)">Native Name</th> 
+        <th @click="sortDataTable(i++)">Alternative</th>
         <th>Country Calling Codes</th>
       </tr>
       <tr v-for="data in filterTableData" :key="data">
@@ -27,9 +27,9 @@
         <td>{{data.cca2}}</td>
         <td>{{data.cca3}}</td>
         <td>{{data.name.nativeName?.zho?.official}}</td>
-        <td style="display: flex; gap: 10px; padding: 24px 0;">
-          <div v-for="alt in data.altSpellings" :key="alt">
-            {{alt}}
+        <td>
+          <div v-for="alt in data.altSpellings" :key="alt" class="alternative">
+            {{alt}},
           </div>  
         </td> 
         <td>{{data.idd.root}}</td>
@@ -40,28 +40,55 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import axios from 'axios'
 
 
 export default {
   setup() {
-    
     const search = ref('');
+    const sort = ref('');
+    const i = ref(0);
     const originalTableData = ref([]);
-    const filterTableData = computed(() => originalTableData.value.filter(data => data.name.official.toLowerCase().indexOf(search.value.toLowerCase()) > -1));
-    
-    onMounted(() => {
+    const cloneOriginalTableData = ref([]);
+    const getData = () => {
       axios.get('https://restcountries.com/v3.1/all')
       .then(response => {
-        console.log(response);
-      originalTableData.value = response.data
+        originalTableData.value = response.data;
       });
+    }
+    getData();
+    watch(() => i.value, () => {
+      if (i.value === 0) {
+        getData();
+      } else if (i.value === 1) {
+        originalTableData.value = originalTableData.value.sort((a, b) => a.name.official.localeCompare(b.name.official));
+      } else if (i.value === 2) {
+        originalTableData.value = originalTableData.value.sort((a, b) => b.name.official.localeCompare(a.name.official));
+      } else if (i.value === 3) {
+        i.value = 0;
+      }
     });
+
+    watch(() => i.value, () => {
+      if (i.value === 0) {
+        console.log(originalTableData);
+      } else if (i.value === 1) {
+        originalTableData.value = originalTableData.value.sort((a, b) => a.altSpellings.localeCompare(b.altSpellings));
+      } else if (i.value === 2) {
+        originalTableData.value = originalTableData.value.sort((a, b) => b.altSpellings.localeCompare(a.altSpellings));
+      } else if (i.value === 3) {
+        i.value = 0;
+      }
+    });
+
+    const filterTableData = computed(() => originalTableData.value.filter(data => data.name.official.toLowerCase().indexOf(search.value.toLowerCase()) > -1));
     return {
         search,
         filterTableData,
         originalTableData,
+        // sortDataTable,
+        i,
     }
   },
 }
@@ -119,11 +146,23 @@ th{
   background: #e5e5e5;
   padding: 10px 10px;
   border-right: 1px solid #fff;
-  width: 12%;
+  cursor: pointer;
+}
+.tile-name{
+  position: relative;
+}
+.tile-name::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 30px;
 }
 th:nth-child(7){
   border: 0;
-  width: 11%;
+  width: 10%;
+}
+.alternative {
+    display: inline;
 }
 td{
   padding: 5px 10px;
