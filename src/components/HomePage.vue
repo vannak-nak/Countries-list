@@ -1,11 +1,13 @@
 <template>
-  <div class="text-red-500">Test Tailwind</div>
+  <div class="text-red-500" style="margin-top:50px;">Test Tailwind</div>
   <div class="wrap">
     <el-row>
     <el-col :span="12"><div class="grid-content ep-bg-purple" />
+      
+    </el-col>
+    <el-col :span="12"><div class="grid-content ep-bg-purple-light" />
       <el-input v-model="search" size="big" placeholder="search" type="text" />
     </el-col>
-    <el-col :span="12"><div class="grid-content ep-bg-purple-light" /></el-col>
     </el-row>
     <el-table
       :data="filterTableData"
