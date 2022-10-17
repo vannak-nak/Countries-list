@@ -1,10 +1,20 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-import "./registerServiceWorker";
-import store from "./store";
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-createApp(App).use(store, VueAxios, axios, library, FontAwesomeIcon).mount("#app");
+const app = createApp(App)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+// Choice #1: register all components. Impacts global bundle size
+app.use(ElementPlus, {
+  // options
+})
+app.use(store, VueAxios, axios).use(router)
+app.mount('#app')
