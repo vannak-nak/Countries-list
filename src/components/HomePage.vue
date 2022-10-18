@@ -13,7 +13,6 @@
     </el-row>
     <el-table
       :data="filterTableData"
-      :default-sort="{ prop: 'date', order: 'descending' }"
       style="width: 100%"
     >
       <el-table-column label="Flags" width="100px">
@@ -23,9 +22,10 @@
       </el-table-column>
       <el-table-column prop="name.official" label="Name" sortable width="180">
         <template #header>Name
-           <span @click="arrowSort++">
-            <el-icon v-if="displaySort === 0"  class="opacity-0 hover:opacity-100"><Top /></el-icon>
-            <el-icon v-if="displaySort === 2" class="opacity-0 hover:opacity-100"><Bottom /></el-icon>
+          <span @click="clickSort">
+            <el-icon v-if="arrowSort === 0 " class="opacity-0 hover:opacity-100"><Top /></el-icon>
+            <el-icon v-else-if="arrowSort === 1 "><Top /></el-icon>
+            <el-icon v-else><Bottom /></el-icon>
            </span>
         </template>
       </el-table-column>
@@ -74,20 +74,12 @@ export default {
     const filterTableData = computed(() => tableData.value.filter((data) =>!search.value || data.name.official.toLowerCase().includes(search.value.toLowerCase())))
 
     const arrowSort = ref(0);
-   
-    const clickSort = (data) => {
+    const clickSort = () => {
       arrowSort.value = arrowSort.value + 1;
-      if ( arrowSort.value === 3) {
-        arrow.value = 0;
-      }
-    }
-     watch(() => arrowSort.value, () => {
-      if (arrowSort.value === 3) {
+      if (arrowSort.value > 2){
         arrowSort.value = 0;
       }
-    })
-    const displaySort = computed(() => arrowSort.value)
-
+    }
     // const currentPage1 = ref(5)
     // const currentPage2 = ref(5)
     // const currentPage3 = ref(5)
@@ -108,7 +100,6 @@ export default {
       filterTableData,
       arrowSort,
       clickSort,
-      displaySort,
     } 
 },
 }
