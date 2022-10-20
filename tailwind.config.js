@@ -3,6 +3,7 @@ module.exports = {
   content: ['./public/**/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   presets: [],
   darkMode: 'media', // or 'class'
+  mportant: true,
   theme: {
     screens: {
       sm: '640px',
