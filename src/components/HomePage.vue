@@ -113,10 +113,22 @@
         </el-col>
         <el-col :span="7" class="text-left">
           <el-row class="mb-4">{{detailInformation.name.official}}</el-row>
-          <el-row class="mb-4">{{detailInformation.name.nativeName.bul.official}}</el-row>
+          <el-row class="mb-4">
+             <div v-for="key in Object.entries(detailInformation.name.nativeName)" :key="key">
+               <div v-for="k in key" :key="k">
+                 {{k.official}}
+              </div>
+            </div>            
+          </el-row>        
           <el-row class="mb-4">{{detailInformation.name.common}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></el-row>
-          <el-row class="mb-4">{{detailInformation.languages.bul}}</el-row>
+          <el-row class="mb-4">
+            <div v-for="lan in Object.entries(detailInformation.languages)" :key="lan">
+              <div v-for="l in lan" :key="l">  
+                 {{l}}
+              </div>  
+            </div> 
+          </el-row>
           <el-row class="mb-4">{{detailInformation.region}}</el-row>
           <el-row class="mb-4">{{detailInformation.subregion}}</el-row>         
           <el-row class="mb-4">{{detailInformation.cca2}}</el-row>
@@ -151,12 +163,18 @@
         <el-col :span="7" class="text-left">
           <el-row class="mb-4">{{detailInformation.independent}}</el-row>
           <el-row class="mb-4">{{detailInformation.status}}</el-row>
-          <el-row class="mb-4">{{detailInformation.currencies.BGN.name}}</el-row>
+          <el-row class="mb-4">
+            <div v-for="cur in Object.entries(detailInformation.currencies)" :key="cur">
+              <div v-for="c in cur" :key="c">  
+                 {{c.name}}
+              </div>
+            </div>
+          </el-row>
           <el-row class="mb-4">{{detailInformation.idd.root}}</el-row>
-          <el-row class="mb-4">{{detailInformation.languages.bul}}</el-row>
           <el-row class="mb-4">{{detailInformation.unMember}}</el-row>
           <el-row class="mb-4">{{detailInformation.population}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.timezones" :key="item">{{item}}</div></el-row>
+          <el-row class="mb-4"><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></el-row>
           <el-row class="mb-4">{{detailInformation.flags.png}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.altSpellings" :key="item">{{item}}</div></el-row>
         </el-col>
@@ -169,6 +187,7 @@ import { ref, computed } from 'vue';
 import axios from 'axios';
 export default {
   setup() {
+    
     const data = ref({
       tableData: [],
       page: 1,
