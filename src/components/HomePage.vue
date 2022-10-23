@@ -114,19 +114,15 @@
         <el-col :span="7" class="text-left">
           <el-row class="mb-4">{{detailInformation.name.official}}</el-row>
           <el-row class="mb-4">
-             <div v-for="key in Object.entries(detailInformation.name.nativeName)" :key="key">
-               <div v-for="k in key" :key="k">
-                 {{k.official}}
-              </div>
+             <div v-for="key in Object.values(detailInformation.name.nativeName)" :key="key">
+              {{key.official}}
             </div>            
           </el-row>        
           <el-row class="mb-4">{{detailInformation.name.common}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></el-row>
           <el-row class="mb-4">
-            <div v-for="lan in Object.entries(detailInformation.languages)" :key="lan">
-              <div v-for="l in lan" :key="l">  
-                 {{l}}
-              </div>  
+            <div v-for="lan in Object.values(detailInformation.languages)" :key="lan">
+              {{lan}}  
             </div> 
           </el-row>
           <el-row class="mb-4">{{detailInformation.region}}</el-row>
@@ -164,10 +160,8 @@
           <el-row class="mb-4">{{detailInformation.independent}}</el-row>
           <el-row class="mb-4">{{detailInformation.status}}</el-row>
           <el-row class="mb-4">
-            <div v-for="cur in Object.entries(detailInformation.currencies)" :key="cur">
-              <div v-for="c in cur" :key="c">  
-                 {{c.name}}
-              </div>
+            <div v-for="cur in Object.values(detailInformation.currencies)" :key="cur"> 
+              {{cur.name}}
             </div>
           </el-row>
           <el-row class="mb-4">{{detailInformation.idd.root}}</el-row>
