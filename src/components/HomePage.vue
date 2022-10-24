@@ -114,8 +114,9 @@
         <el-col :span="7" class="text-left">
           <el-row class="mb-4">{{detailInformation.name.official}}</el-row>
           <el-row class="mb-4">
-             <div v-for="key in Object.values(detailInformation.name.nativeName)" :key="key">
-              {{key.official}}
+             <div v-for="key in detailInformation.name.nativeName" :key="key">
+              {{key}}
+              <!-- {{Object(detailInformation.name.nativeName)}} -->
             </div>            
           </el-row>        
           <el-row class="mb-4">{{detailInformation.name.common}}</el-row>
@@ -160,7 +161,7 @@
           <el-row class="mb-4">{{detailInformation.independent}}</el-row>
           <el-row class="mb-4">{{detailInformation.status}}</el-row>
           <el-row class="mb-4">
-            <div v-for="cur in Object.values(detailInformation.currencies)" :key="cur"> 
+            <div v-for="cur in Object.values(detailInformation.currencies)" :key="cur">
               {{cur.name}}
             </div>
           </el-row>
@@ -174,14 +175,20 @@
         </el-col>
       </el-row>
   </el-dialog>
+  
 </template>
 
+<!--const ages = ['bul.office, bul.common, eng.official, eng common, res.official, res.common']-->
 <script>
 import { ref, computed } from 'vue';
 import axios from 'axios';
 export default {
   setup() {
-    
+
+    const ages = [26, 27, 26, 26, 28, 28, 29, 29, 30]
+    const result = Array.from(new Set(ages));
+    console.log(result)
+
     const data = ref({
       tableData: [],
       page: 1,
