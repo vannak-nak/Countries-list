@@ -22,7 +22,7 @@
           <img class="rounded-full" :src="scope.row.flags.png" alt="">
         </template>
       </el-table-column>
-      <el-table-column sortable width="250" >
+      <el-table-column prop="name" sortable width="250" >
         <template #header>
           <span @click="clickSort(name = 'name')" class="w-full">
             <p v-if="arrowSort === 0 " :class="{disableactive: activeTab === 'name'}">Country Name</p>
@@ -64,7 +64,7 @@
           <span @click="clickAlter(name = 'alter')" class="w-full">
             <p v-if="sortAlter === 0 " :class="{disableactive: activeTab === 'alter'}">Alternative</p>
             <p v-else :class="{ active: activeTab === 'alter'}">Alternative</p>
-            <el-icon v-if="sortAlter === 0 " :class="{'text-blue opacity-0': activeTab === 'name'}"><Top /></el-icon>
+            <el-icon v-if="sortAlter === 0 " :class="{'text-blue opacity-0': activeTab === 'alter'}"><Top /></el-icon>
             <el-icon v-else-if="sortAlter === 1 " :class="{ active: activeTab === 'alter'}"><Top /></el-icon>
             <el-icon v-else :class="{ active: activeTab === 'alter'}"><Bottom /></el-icon>
            </span>
@@ -114,14 +114,11 @@
         <el-col :span="7" class="text-left">
           <el-row class="mb-4">{{detailInformation.name.official}}</el-row>
           <el-row class="mb-4">
-             <div v-for="key in detailInformation.name.nativeName" :key="key">
-              {{key}}
-              <!-- {{Object(detailInformation.name.nativeName)}} -->
-            </div>            
+            {{Object.values(detailInformation.name.nativeName)[0].official}}                     
           </el-row>        
           <el-row class="mb-4">{{detailInformation.name.common}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></el-row>
-          <el-row class="mb-4">
+          <el-row class="mb-4"> 
             <div v-for="lan in Object.values(detailInformation.languages)" :key="lan">
               {{lan}}  
             </div> 
@@ -170,7 +167,7 @@
           <el-row class="mb-4">{{detailInformation.population}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.timezones" :key="item">{{item}}</div></el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></el-row>
-          <el-row class="mb-4">{{detailInformation.flags.png}}</el-row>
+          <el-row class="mb-4" style="color:#0133e7">{{detailInformation.flags.png}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.altSpellings" :key="item">{{item}}</div></el-row>
         </el-col>
       </el-row>
@@ -178,16 +175,14 @@
   
 </template>
 
-<!--const ages = ['bul.office, bul.common, eng.official, eng common, res.official, res.common']-->
 <script>
 import { ref, computed } from 'vue';
 import axios from 'axios';
 export default {
   setup() {
-
-    const ages = [26, 27, 26, 26, 28, 28, 29, 29, 30]
-    const result = Array.from(new Set(ages));
-    console.log(result)
+    const array1 = [{name: 'Krunal'}, 'eng', 'res'];
+    
+    console.log(array1[Object.keys(array1)[0]]);
 
     const data = ref({
       tableData: [],
