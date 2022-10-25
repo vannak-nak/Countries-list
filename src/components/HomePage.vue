@@ -22,19 +22,19 @@
           <img class="rounded-full" :src="scope.row.flags.png" alt="">
         </template>
       </el-table-column>
-      <el-table-column prop="name" sortable width="250" >
+      <el-table-column prop="name.official" sortable width="250" >
         <template #header>
           <span @click="clickSort(name = 'name')" class="w-full">
             <p v-if="arrowSort === 0 " :class="{disableactive: activeTab === 'name'}">Country Name</p>
             <p v-else :class="{ active: activeTab === 'name'}">Country Name</p>
-            <el-icon v-if="arrowSort === 0 "><Top /></el-icon>
+            <el-icon v-if="arrowSort === 0 " :class="{'opacity-0': activeTab === 'name'}"><Top /></el-icon>
             <el-icon v-else-if="arrowSort === 1 " :class="{ active: activeTab === 'name'}"><Top /></el-icon>
             <el-icon v-else :class="{ active: activeTab === 'name'}"><Bottom /></el-icon>
-           </span>
+          </span>
         </template>
         <template #default="scope">
           <div @click="onDetail(scope.row)">{{scope.row.name.official}}</div>
-       </template>
+       </template>  
       </el-table-column>
       <el-table-column prop="cca2" label="2 character Country Code" sortable width="230" >
         <template #header>
@@ -58,13 +58,15 @@
            </span>
         </template>
       </el-table-column>
-      <el-table-column prop="name.nativeName.eng.official" label="Native Name" width="120" />
+      <el-table-column label="Native Name" width="170" >
+        
+      </el-table-column>
       <el-table-column prop="altSpellings" label="Alternative" sortable >
         <template #header>
           <span @click="clickAlter(name = 'alter')" class="w-full">
             <p v-if="sortAlter === 0 " :class="{disableactive: activeTab === 'alter'}">Alternative</p>
             <p v-else :class="{ active: activeTab === 'alter'}">Alternative</p>
-            <el-icon v-if="sortAlter === 0 " :class="{'text-blue opacity-0': activeTab === 'alter'}"><Top /></el-icon>
+            <el-icon v-if="sortAlter === 0 " :class="{'opacity-0': activeTab === 'alter'}"><Top /></el-icon>
             <el-icon v-else-if="sortAlter === 1 " :class="{ active: activeTab === 'alter'}"><Top /></el-icon>
             <el-icon v-else :class="{ active: activeTab === 'alter'}"><Bottom /></el-icon>
            </span>
@@ -83,8 +85,36 @@
     </div>
   </div>
   <el-dialog v-model="dialogTableVisible">
-    <template #header><el-row class="font-bold justify-center bg-slate-700 text-white p-2 m-0">Detail Information</el-row></template>    
-     <el-row>
+    <template #header><el-row class="font-bold justify-center bg-slate-700 text-white p-2 m-0">Detail Information</el-row></template>
+    <div class="flex">
+      <table class="w-1/2 text-left">
+        <tr><th class="w-40 pb-2.5">Official Name</th><td class="w-8">:</td><td>{{detailInformation.name.official}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Native Name</th><td class="w-8">:</td><td>{{Object.values(detailInformation.name.nativeName)[0].official}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Common Name</th><td class="w-8">:</td><td>{{detailInformation.name.common}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Capital</th><td class="w-8">:</td><td><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></td></tr>
+        <tr><th class="w-40 pb-2.5">Languages</th><td class="w-8">:</td><td><div v-for="lan in Object.values(detailInformation.languages)" :key="lan">{{lan}}</div></td></tr>
+        <tr><th class="w-40 pb-2.5">Region</th><td class="w-8">:</td><td>{{detailInformation.region}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Subregion</th><td class="w-8">:</td><td>{{detailInformation.subregion}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Country-code 2</th><td class="w-8">:</td><td>{{detailInformation.cca2}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Country-code 3</th><td class="w-8">:</td><td>{{detailInformation.cca3}}</td></tr>
+        <tr><th class="w-40 pb-2.5">CCN3</th><td class="w-8">:</td><td>{{detailInformation.ccn3}}</td></tr>
+        <tr><th class="w-40 pb-2.5">CIOC</th><td class="w-8">:</td><td>{{detailInformation.cioc}}</td></tr>
+      </table>
+      <table class="w-1/2 text-left float-right">
+        <tr><th class="w-40 pb-2.5">Independant</th><td class="w-8">:</td><td>{{detailInformation.independent}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Status</th><td class="w-8">:</td><td>{{detailInformation.status}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Currency</th><td class="w-8">:</td><td><div v-for="cur in Object.values(detailInformation.currencies)" :key="cur">{{cur.name}}</div></td></tr>
+        <tr><th class="w-40 pb-2.5">IDD root</th><td class="w-8">:</td><td>{{detailInformation.idd.root}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Unmember</th><td class="w-8">:</td><td>{{detailInformation.unMember}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Population</th><td class="w-8">:</td><td>{{detailInformation.population}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Timezone</th><td class="w-8">:</td><td>{{Object.values(detailInformation.timezones)[0]}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Contient</th><td class="w-8">:</td><td><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></td></tr>
+        <tr><th class="w-40 pb-2.5">Flag</th><td class="w-8">:</td><td style="color: blue;">{{detailInformation.flags.png}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Alternative</th><td class="w-8">:</td><td><div v-for="alt in Object.values(detailInformation.altSpellings)" :key="alt">{{alt}}</div></td></tr>
+      </table>
+    </div>
+          
+     <!-- <el-row>
         <el-col :span="4" class="">
           <el-row class="font-bold mb-4">Official Name</el-row>
           <el-row class="font-bold mb-4">Native Name</el-row>
@@ -119,9 +149,7 @@
           <el-row class="mb-4">{{detailInformation.name.common}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></el-row>
           <el-row class="mb-4"> 
-            <div v-for="lan in Object.values(detailInformation.languages)" :key="lan">
-              {{lan}}  
-            </div> 
+            <div v-for="lan in Object.values(detailInformation.languages)" :key="lan">{{lan}}</div> 
           </el-row>
           <el-row class="mb-4">{{detailInformation.region}}</el-row>
           <el-row class="mb-4">{{detailInformation.subregion}}</el-row>         
@@ -158,19 +186,19 @@
           <el-row class="mb-4">{{detailInformation.independent}}</el-row>
           <el-row class="mb-4">{{detailInformation.status}}</el-row>
           <el-row class="mb-4">
-            <div v-for="cur in Object.values(detailInformation.currencies)" :key="cur">
-              {{cur.name}}
-            </div>
+            <div v-for="cur in Object.values(detailInformation.currencies)" :key="cur">{{cur.name}}</div>
           </el-row>
           <el-row class="mb-4">{{detailInformation.idd.root}}</el-row>
           <el-row class="mb-4">{{detailInformation.unMember}}</el-row>
           <el-row class="mb-4">{{detailInformation.population}}</el-row>
-          <el-row class="mb-4"><div v-for="item in detailInformation.timezones" :key="item">{{item}}</div></el-row>
+          <el-row class="mb-4">
+            {{Object.values(detailInformation.timezones)[0]}}
+          </el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></el-row>
           <el-row class="mb-4" style="color:#0133e7">{{detailInformation.flags.png}}</el-row>
           <el-row class="mb-4"><div v-for="item in detailInformation.altSpellings" :key="item">{{item}}</div></el-row>
         </el-col>
-      </el-row>
+      </el-row> -->
   </el-dialog>
   
 </template>
@@ -178,11 +206,9 @@
 <script>
 import { ref, computed } from 'vue';
 import axios from 'axios';
+
 export default {
   setup() {
-    const array1 = [{name: 'Krunal'}, 'eng', 'res'];
-    
-    console.log(array1[Object.keys(array1)[0]]);
 
     const data = ref({
       tableData: [],
@@ -193,18 +219,18 @@ export default {
       axios.get('https://restcountries.com/v3.1/all')
       .then(response => {
         data.value.tableData = response.data;
-      console.log('data.value.tableData', data.value.tableData);
       });
     }
     getData();
     const search = ref('')
     const filterTableData = computed(() => {
+      console.log(data.value.pageSize);
       return data.value.tableData.slice(data.value.pageSize * data.value.page - data.value.pageSize, data.value.pageSize * data.value.page)
       .filter((data) =>!search.value || data.name.official.toLowerCase().includes(search.value.toLowerCase()))
     })
-    console.log(filterTableData);
-    const arrowSort = ref(0);
+
     const activeTab = ref('');
+    const arrowSort = ref(0);
     const clickSort = (name) => {
       arrowSort.value = arrowSort.value + 1;
       if (arrowSort.value > 2){
@@ -325,6 +351,7 @@ h1{
 .disableactive{
   color: #333;
 }
-
-
+:deep(.el-dialog__body){
+  display: flex;
+}
 </style>
