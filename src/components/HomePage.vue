@@ -59,7 +59,11 @@
         </template>
       </el-table-column>
       <el-table-column label="Native Name" width="170" >
-        
+        <template #default="scope">
+          <div v-if="!scope.row.name.nativeName"> --</div>
+          <div v-else>{{Object.values(scope.row.name.nativeName)[0].official}}</div>
+       </template> 
+        <!-- {{result}} -->
       </el-table-column>
       <el-table-column prop="altSpellings" label="Alternative" sortable >
         <template #header>
@@ -71,6 +75,7 @@
             <el-icon v-else :class="{ active: activeTab === 'alter'}"><Bottom /></el-icon>
            </span>
         </template>
+        
       </el-table-column>
       <el-table-column prop="idd.root" label="Character Calling Code" sortable width="140" />
     </el-table>
@@ -84,15 +89,103 @@
       :total="data.tableData.length"/>
     </div>
   </div>
-  <el-dialog v-model="dialogTableVisible">
-    <template #header><el-row class="font-bold justify-center bg-slate-700 text-white p-2 m-0">Detail Information</el-row></template>
-    <div class="flex">
+  <!--Pop up-->
+  <el-dialog v-model="dialogTableVisible" >    
+    <template #header="{ titleId, titleClass }">
+      <div class="my-header flex justify-between">
+        <h4 :id="titleId" :class="titleClass">Details Information</h4>
+        <!-- <el-button type="danger" @click="close">
+          <el-icon class="el-icon--left"><CircleCloseFilled /></el-icon>
+          Close
+        </el-button> -->
+      </div> 
+    </template>
+    <div class="flex gap-5">
+      <div class="w-1/2">
+        <div class="grid grid-cols-7 text-left">
+          <div class="col-span-2">Official Name</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.name.official}}</div>
+          <div class="col-span-2">Native Name</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{nativeName(detailInformation.name)}}</div>
+          <div class="col-span-2">Common Name</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.name.common}}</div>
+          <div class="col-span-2">Capital</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></div>
+          <div class="col-span-2">Languages</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{lanEmpty(detailInformation.languages)}}</div>
+          <div class="col-span-2">Region</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.region}}</div>
+          <div class="col-span-2">Country-code 2</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.subregion}}</div>
+          <div class="col-span-2">Country-code 3</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.cca2}}</div>
+          <div class="col-span-2">CCN3</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.cca3}}</div>
+          <div class="col-span-2">CIOC</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.cioc}}</div>
+        </div>
+      </div>
+      <div class="w-1/2">
+        <div class="grid grid-cols-7 text-left mb-3">
+          <div class="col-span-2">Independant</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.independent}}</div>
+          <div class="col-span-2">Status</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.status}}</div>
+          <div class="col-span-2">Currency</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{currencyEmpty(detailInformation.currencies)}}</div>
+          <div class="col-span-2">IDD root</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.idd.root}}</div>
+          <div class="col-span-2">Unmember</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.unMember}}</div>
+          <div class="col-span-2">Population</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.population}}</div>
+          <div class="col-span-2">Timezone</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{Object.values(detailInformation.timezones)[0]}}</div>
+          <div class="col-span-2">Contient</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4"><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></div>
+          <div class="col-span-2">Flag</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">{{detailInformation.flags.png}}</div>
+          <div class="col-span-2">Alternative</div>
+          <div class="col-span-1 text-center">:</div>
+          <div class="col-span-4">
+            <span v-for="alt in Object.values(detailInformation.altSpellings)" :key="alt">{{alt}}</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="flex">
       <table class="w-1/2 text-left">
         <tr><th class="w-40 pb-2.5">Official Name</th><td class="w-8">:</td><td>{{detailInformation.name.official}}</td></tr>
-        <tr><th class="w-40 pb-2.5">Native Name</th><td class="w-8">:</td><td>{{Object.values(detailInformation.name.nativeName)[0].official}}</td></tr>
+        <tr><th class="w-40 pb-2.5">Native Name</th><td class="w-8">:</td><td>
+          
+          {{nativeName(detailInformation.name)}}
+        </td></tr>
         <tr><th class="w-40 pb-2.5">Common Name</th><td class="w-8">:</td><td>{{detailInformation.name.common}}</td></tr>
         <tr><th class="w-40 pb-2.5">Capital</th><td class="w-8">:</td><td><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></td></tr>
-        <tr><th class="w-40 pb-2.5">Languages</th><td class="w-8">:</td><td><div v-for="lan in Object.values(detailInformation.languages)" :key="lan">{{lan}}</div></td></tr>
+        <tr><th class="w-40 pb-2.5">Languages</th><td class="w-8">:</td><td>
+          {{lanEmpty(detailInformation.languages)}}
+        </td></tr>
         <tr><th class="w-40 pb-2.5">Region</th><td class="w-8">:</td><td>{{detailInformation.region}}</td></tr>
         <tr><th class="w-40 pb-2.5">Subregion</th><td class="w-8">:</td><td>{{detailInformation.subregion}}</td></tr>
         <tr><th class="w-40 pb-2.5">Country-code 2</th><td class="w-8">:</td><td>{{detailInformation.cca2}}</td></tr>
@@ -101,19 +194,29 @@
         <tr><th class="w-40 pb-2.5">CIOC</th><td class="w-8">:</td><td>{{detailInformation.cioc}}</td></tr>
       </table>
       <table class="w-1/2 text-left float-right">
-        <tr><th class="w-40 pb-2.5">Independant</th><td class="w-8">:</td><td>{{detailInformation.independent}}</td></tr>
+        <tr>
+          <th class="w-40 pb-2.5">Independant</th><td class="w-8">:</td>
+          <td>{{detailInformation.independent}}</td>
+        </tr>
         <tr><th class="w-40 pb-2.5">Status</th><td class="w-8">:</td><td>{{detailInformation.status}}</td></tr>
-        <tr><th class="w-40 pb-2.5">Currency</th><td class="w-8">:</td><td><div v-for="cur in Object.values(detailInformation.currencies)" :key="cur">{{cur.name}}</div></td></tr>
+        <tr><th class="w-40 pb-2.5">Currency</th><td class="w-8">:</td><td>
+          {{currencyEmpty(detailInformation.currencies)}}
+        </td></tr>
         <tr><th class="w-40 pb-2.5">IDD root</th><td class="w-8">:</td><td>{{detailInformation.idd.root}}</td></tr>
         <tr><th class="w-40 pb-2.5">Unmember</th><td class="w-8">:</td><td>{{detailInformation.unMember}}</td></tr>
         <tr><th class="w-40 pb-2.5">Population</th><td class="w-8">:</td><td>{{detailInformation.population}}</td></tr>
         <tr><th class="w-40 pb-2.5">Timezone</th><td class="w-8">:</td><td>{{Object.values(detailInformation.timezones)[0]}}</td></tr>
         <tr><th class="w-40 pb-2.5">Contient</th><td class="w-8">:</td><td><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></td></tr>
         <tr><th class="w-40 pb-2.5">Flag</th><td class="w-8">:</td><td style="color: blue;">{{detailInformation.flags.png}}</td></tr>
-        <tr><th class="w-40 pb-2.5">Alternative</th><td class="w-8">:</td><td><div v-for="alt in Object.values(detailInformation.altSpellings)" :key="alt">{{alt}}</div></td></tr>
+        <tr>
+          <th class="w-40 pb-2.5">Alternative</th>
+          <td class="w-8">:</td>
+          <td class="flex gap-2" v-for="alt in Object.values(detailInformation.altSpellings)" :key="alt">
+            {{alt}}
+        </td></tr>
       </table>
-    </div>
-          
+    </div> -->
+
      <!-- <el-row>
         <el-col :span="4" class="">
           <el-row class="font-bold mb-4">Official Name</el-row>
@@ -206,10 +309,40 @@
 <script>
 import { ref, computed } from 'vue';
 import axios from 'axios';
+import { result } from 'lodash';
 
 export default {
   setup() {
 
+    const nativeName = (prop) => {
+      let result = '';
+       if (!prop.nativeName) {
+        result = '-----------'
+      } else if (prop.nativeName) {
+        result = Object.values(prop.nativeName)[0].official;
+      }
+      return result;
+    };
+    const lanEmpty = (languages) => {
+      console.log(languages);
+      let result = '';
+        if (!languages) {
+         result = '-----------'
+       } else if (languages) {
+         result = Object.values(languages)[0];
+       }
+       return result;
+    };
+    const currencyEmpty = (currencies) => {
+      console.log(currencies);
+      let result = '';
+        if (!currencies) {
+         result = '-----------'
+       } else if (currencies) {
+         result = Object.values(currencies)[0].name;
+       }
+       return result;
+    };
     const data = ref({
       tableData: [],
       page: 1,
@@ -224,7 +357,6 @@ export default {
     getData();
     const search = ref('')
     const filterTableData = computed(() => {
-      console.log(data.value.pageSize);
       return data.value.tableData.slice(data.value.pageSize * data.value.page - data.value.pageSize, data.value.pageSize * data.value.page)
       .filter((data) =>!search.value || data.name.official.toLowerCase().includes(search.value.toLowerCase()))
     })
@@ -284,6 +416,9 @@ export default {
       dialogTableVisible,
       onDetail,
       detailInformation,
+      nativeName,
+      lanEmpty,
+      currencyEmpty,
     } 
 },
 }
