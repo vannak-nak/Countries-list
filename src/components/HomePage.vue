@@ -58,12 +58,20 @@
            </span>
         </template>
       </el-table-column>
-      <el-table-column label="Native Name" width="170" >
-        <template #default="scope">
-          <div v-if="!scope.row.name.nativeName"> --</div>
+      <el-table-column label="Native Name" width="170" sortable>     
+        <!-- <template #header>
+          <span @click="clickNative(name = 'native')" class="w-full">
+            <p v-if="nativeSort === 0 " :class="{disableactive: activeTab === 'native'}">Native Name</p>
+            <p v-else :class="{ active: activeTab === 'native'}">Native Name</p>
+            <el-icon v-if="nativeSort === 0 " :class="{'text-blue opacity-0': activeTab === 'native'}"><Top /></el-icon>
+            <el-icon v-else-if="nativeSort === 1 " :class="{ active: activeTab === 'native'}"><Top /></el-icon>
+            <el-icon v-else :class="{ active: activeTab === 'native'}"><Bottom /></el-icon>
+           </span>
+        </template> -->
+        <template #default="scope" >
+          <div v-if="!scope.row.name.nativeName">--</div>
           <div v-else>{{Object.values(scope.row.name.nativeName)[0].official}}</div>
        </template> 
-        <!-- {{result}} -->
       </el-table-column>
       <el-table-column prop="altSpellings" label="Alternative" sortable >
         <template #header>
@@ -75,9 +83,18 @@
             <el-icon v-else :class="{ active: activeTab === 'alter'}"><Bottom /></el-icon>
            </span>
         </template>
-        
       </el-table-column>
-      <el-table-column prop="idd.root" label="Character Calling Code" sortable width="140" />
+      <el-table-column prop="idd.root" label="Character Calling Code" sortable width="140" >
+      <template #header>
+          <span @click="clickIdd(name = 'idd')" class="w-full">
+            <p v-if="iddSort === 0 " :class="{disableactive: activeTab === 'idd'}">Character Calling Code</p>
+            <p v-else :class="{ active: activeTab === 'idd'}">Character Calling Code</p>
+            <el-icon v-if="iddSort === 0 " :class="{'opacity-0': activeTab === 'idd'}"><Top /></el-icon>
+            <el-icon v-else-if="iddSort === 1 " :class="{ active: activeTab === 'idd'}"><Top /></el-icon>
+            <el-icon v-else :class="{ active: activeTab === 'idd'}"><Bottom /></el-icon>
+          </span>
+        </template>
+      </el-table-column>
     </el-table>
     <!--Pagination-->
     <div class="flex justify-end mb-12 mt-4">
@@ -89,86 +106,88 @@
       :total="data.tableData.length"/>
     </div>
   </div>
-  <!--Pop up-->
-  <el-dialog v-model="dialogTableVisible" >    
-    <template #header="{ titleId, titleClass }">
-      <div class="my-header flex justify-between">
-        <h4 :id="titleId" :class="titleClass">Details Information</h4>
-        <!-- <el-button type="danger" @click="close">
+  <!--Dialog Pop up-->
+  <el-dialog v-model="dialogTableVisible" :show-close="false">    
+    <template #header="{ close, titleId, titleClass }">
+      <div class="my-header bg-sky-500 p-2.5">
+        <h4 :id="titleId" :class="titleClass">Detail Information</h4>
+        <el-button type="danger" @click="close" class="absolute bottom-5 right-5 bg-red-500 border-0 pl-7">
           <el-icon class="el-icon--left"><CircleCloseFilled /></el-icon>
           Close
-        </el-button> -->
-      </div> 
+        </el-button>
+      </div>
     </template>
     <div class="flex gap-5">
       <div class="w-1/2">
         <div class="grid grid-cols-7 text-left">
-          <div class="col-span-2">Official Name</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.name.official}}</div>
-          <div class="col-span-2">Native Name</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{nativeName(detailInformation.name)}}</div>
-          <div class="col-span-2">Common Name</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.name.common}}</div>
-          <div class="col-span-2">Capital</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></div>
-          <div class="col-span-2">Languages</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{lanEmpty(detailInformation.languages)}}</div>
-          <div class="col-span-2">Region</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.region}}</div>
-          <div class="col-span-2">Country-code 2</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.subregion}}</div>
-          <div class="col-span-2">Country-code 3</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.cca2}}</div>
-          <div class="col-span-2">CCN3</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.cca3}}</div>
-          <div class="col-span-2">CIOC</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.cioc}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Official Name</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.name.official}}</div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="isTrue">Native Name</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="isTrue">:</div>
+          <div class="col-span-4 mb-2.5" v-show="isTrue">{{nativeName(detailInformation.name)}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Common Name</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.name.common}}</div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="detailInformation.capital">Capital</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="detailInformation.capital">:</div>
+          <div class="col-span-4 mb-2.5" v-show="detailInformation.capital"><div v-for="item in detailInformation.capital" :key="item">{{item}}</div></div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="isTrue">Languages</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="isTrue">:</div>
+          <div class="col-span-4 mb-2.5" v-show="isTrue">{{lanEmpty.languages}}<span  v-for="item in detailInformation.languages" :key="item">{{item}}<span>, </span></span></div>
+          <div class="col-span-2 font-bold mb-2.5">Region</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.region}}</div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="detailInformation.subregion">Sub-Region</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="detailInformation.subregion">:</div>
+          <div class="col-span-4 mb-2.5" v-show="detailInformation.subregion">{{detailInformation.subregion}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Country-code 2</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.cca2}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Country-code 3</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.cca3}}</div>
+          <div class="col-span-2 font-bold mb-2.5">CCN3</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.ccn3}}</div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="detailInformation.cioc">CIOC</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="detailInformation.cioc">:</div>
+          <div class="col-span-4 mb-2.5" v-show="detailInformation.cioc">{{detailInformation.cioc}}</div>        
         </div>
       </div>
-      <div class="w-1/2">
+      <div class="w-1/2 pb-5">
         <div class="grid grid-cols-7 text-left mb-3">
-          <div class="col-span-2">Independant</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.independent}}</div>
-          <div class="col-span-2">Status</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.status}}</div>
-          <div class="col-span-2">Currency</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{currencyEmpty(detailInformation.currencies)}}</div>
-          <div class="col-span-2">IDD root</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.idd.root}}</div>
-          <div class="col-span-2">Unmember</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.unMember}}</div>
-          <div class="col-span-2">Population</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.population}}</div>
-          <div class="col-span-2">Timezone</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{Object.values(detailInformation.timezones)[0]}}</div>
-          <div class="col-span-2">Contient</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4"><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></div>
-          <div class="col-span-2">Flag</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">{{detailInformation.flags.png}}</div>
-          <div class="col-span-2">Alternative</div>
-          <div class="col-span-1 text-center">:</div>
-          <div class="col-span-4">
-            <span v-for="alt in Object.values(detailInformation.altSpellings)" :key="alt">{{alt}}</span>
-            
+          <div class="col-span-2 font-bold mb-2.5">Independant</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.independent}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Status</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.status}}</div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="isTrue">Currency</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="isTrue">:</div>
+          <div class="col-span-4 mb-2.5" v-show="isTrue">{{currencyEmpty(detailInformation.currencies)}}</div>
+          <div class="col-span-2 font-bold mb-2.5" v-show="detailInformation.idd.root">IDD root</div>
+          <div class="col-span-1 text-center mb-2.5" v-show="detailInformation.idd.root">:</div>
+          <div class="col-span-4 mb-2.5" v-show="detailInformation.idd.root">{{detailInformation.idd.root}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Unmember</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.unMember}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Population</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{detailInformation.population}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Timezone</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">{{Object.values(detailInformation.timezones)[0]}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Contient</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5"><div v-for="item in detailInformation.continents" :key="item">{{item}}</div></div>
+          <div class="col-span-2 font-bold mb-2.5">Flag</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5 text-blue-500 cursor-pointer">{{detailInformation.flags.png}}</div>
+          <div class="col-span-2 font-bold mb-2.5">Alternative</div>
+          <div class="col-span-1 text-center mb-2.5">:</div>
+          <div class="col-span-4 mb-2.5">
+            <span v-for="alt in Object.values(detailInformation.altSpellings)" :key="alt">{{alt}}<span>, </span></span> 
           </div>
         </div>
       </div>
@@ -303,42 +322,45 @@
         </el-col>
       </el-row> -->
   </el-dialog>
-  
 </template>
 
 <script>
 import { ref, computed } from 'vue';
 import axios from 'axios';
-import { result } from 'lodash';
 
 export default {
   setup() {
-
+    
+    const isTrue = ref(false)
     const nativeName = (prop) => {
       let result = '';
        if (!prop.nativeName) {
-        result = '-----------'
+        result = '--'
+        isTrue.value = false;
       } else if (prop.nativeName) {
+        isTrue.value = true
         result = Object.values(prop.nativeName)[0].official;
       }
       return result;
     };
     const lanEmpty = (languages) => {
-      console.log(languages);
       let result = '';
         if (!languages) {
          result = '-----------'
+         isTrue.value = false;
        } else if (languages) {
-         result = Object.values(languages)[0];
+          isTrue.value = true;
+          result = Object.values(languages); 
        }
        return result;
     };
     const currencyEmpty = (currencies) => {
-      console.log(currencies);
       let result = '';
         if (!currencies) {
          result = '-----------'
+         isTrue.value = false;
        } else if (currencies) {
+        isTrue.value = true;
          result = Object.values(currencies)[0].name;
        }
        return result;
@@ -346,7 +368,7 @@ export default {
     const data = ref({
       tableData: [],
       page: 1,
-      pageSize: 10,
+      pageSize: 25,
     })
     const getData = () => {
       axios.get('https://restcountries.com/v3.1/all')
@@ -362,6 +384,23 @@ export default {
     })
 
     const activeTab = ref('');
+    
+    const iddSort = ref(0);
+    const clickIdd = (name) => {
+      iddSort.value = iddSort.value + 1;
+      if (iddSort.value > 2){
+        iddSort.value = 0;
+      }
+      activeTab.value = name;
+    }
+    const nativeSort = ref(0);
+    const clickNative = (name) => {
+      nativeSort.value = nativeSort.value + 1;
+      if (nativeSort.value > 2){
+        nativeSort.value = 0;
+      }
+      activeTab.value = name;
+    }
     const arrowSort = ref(0);
     const clickSort = (name) => {
       arrowSort.value = arrowSort.value + 1;
@@ -419,6 +458,11 @@ export default {
       nativeName,
       lanEmpty,
       currencyEmpty,
+      isTrue,
+      clickNative,
+      nativeSort,
+      clickIdd,
+      iddSort,
     } 
 },
 }
@@ -488,5 +532,14 @@ h1{
 }
 :deep(.el-dialog__body){
   display: flex;
+}
+.el-dialog__title{
+  color: #fff;
+}
+i.el-icon.el-icon--left{
+  left: 8px;
+}
+.el-id-7293-260{
+  padding-top: 0;
 }
 </style>
