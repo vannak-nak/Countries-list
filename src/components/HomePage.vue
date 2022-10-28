@@ -1,109 +1,125 @@
 <template>
-  <div class="wrap bg-slate-50 p-5 py-1">
-    <el-row class="mt-8 pb-5">
-      <el-col :span="8"><div class="grid-content ep-bg-purple" />
-        <img class="rounded-full w-14 relative" src="../assets/profile2.jpg" alt=""> <p class="absolute left-16 inset-y-5">Thea Vannak</p> 
-      </el-col>
-      <el-col :span="8"><div class="grid-content ep-bg-purple-light" />
-        <h1 class="Pink: 300">All countries in the world</h1>
-      </el-col>
-      <el-col :span="8"><div class="grid-content ep-bg-purple" />
-        <el-input v-model="search" size="big" placeholder="search" type="text" />
-      </el-col>
-    </el-row>
-    <el-table 
-      :data="filterTableData"
-      @select="handleSelect"
-      style="width: 100%;"
-      
-    >
-      <el-table-column label="Flags" width="80px">
-        <template #default="scope">
-          <img class="rounded-full" :src="scope.row.flags.png" alt="">
-        </template>
-      </el-table-column>
-      <el-table-column prop="name.official" sortable width="250" >
-        <template #header>
-          <span @click="clickSort(name = 'name')" class="w-full">
-            <p v-if="arrowSort === 0 " :class="{disableactive: activeTab === 'name'}">Country Name</p>
-            <p v-else :class="{ active: activeTab === 'name'}">Country Name</p>
-            <el-icon v-if="arrowSort === 0 " :class="{'opacity-0': activeTab === 'name'}"><Top /></el-icon>
-            <el-icon v-else-if="arrowSort === 1 " :class="{ active: activeTab === 'name'}"><Top /></el-icon>
-            <el-icon v-else :class="{ active: activeTab === 'name'}"><Bottom /></el-icon>
-          </span>
-        </template>
-        <template #default="scope">
-          <div @click="onDetail(scope.row)">{{scope.row.name.official}}</div>
-       </template>  
-      </el-table-column>
-      <el-table-column prop="cca2" label="2 character Country Code" sortable width="230" >
-        <template #header>
-          <span @click="clickCCC2(name = 'country-code')" class="w-full">
-            <p v-if="sortCCC2 === 0 " :class="{disableactive: activeTab === 'country-code'}">2 character Country Code</p>
-            <p v-else :class="{ active: activeTab === 'country-code'}">2 character Country Code</p>
-            <el-icon v-if="sortCCC2 === 0 "><Top /></el-icon>
-            <el-icon v-else-if="sortCCC2 === 1 " :class="{ active: activeTab === 'country-code'}"><Top /></el-icon>
-            <el-icon v-else  :class="{ active: activeTab === 'country-code'}"><Bottom /></el-icon>
-          </span>
-        </template>
-      </el-table-column>  
-      <el-table-column prop="cca3" label="3 character Country Code" sortable width="230" >
-        <template #header>
-          <span @click="clickCCC3(name = 'country-code3')" class="w-full">
-            <p v-if="sortCCC3 === 0 " :class="{disableactive: activeTab === 'country-code3'}">3 character Country Code</p>
-            <p v-else :class="{ active: activeTab === 'country-code3'}">3 character Country Code</p>
-            <el-icon v-if="sortCCC3 === 0 " :class="{'text-blue opacity-0': activeTab === 'name'}"><Top /></el-icon>
-            <el-icon v-else-if="sortCCC3 === 1 " :class="{ active: activeTab === 'country-code3'}"><Top /></el-icon>
-            <el-icon v-else :class="{ active: activeTab === 'country-code3'}"><Bottom /></el-icon>
-           </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Native Name" width="170" sortable>     
-        <!-- <template #header>
-          <span @click="clickNative(name = 'native')" class="w-full">
-            <p v-if="nativeSort === 0 " :class="{disableactive: activeTab === 'native'}">Native Name</p>
-            <p v-else :class="{ active: activeTab === 'native'}">Native Name</p>
-            <el-icon v-if="nativeSort === 0 " :class="{'text-blue opacity-0': activeTab === 'native'}"><Top /></el-icon>
-            <el-icon v-else-if="nativeSort === 1 " :class="{ active: activeTab === 'native'}"><Top /></el-icon>
-            <el-icon v-else :class="{ active: activeTab === 'native'}"><Bottom /></el-icon>
-           </span>
-        </template> -->
-        <template #default="scope" >
-          <div v-if="!scope.row.name.nativeName">--</div>
-          <div v-else>{{Object.values(scope.row.name.nativeName)[0].official}}</div>
-       </template> 
-      </el-table-column>
-      <el-table-column prop="altSpellings" label="Alternative" sortable >
-        <template #header>
-          <span @click="clickAlter(name = 'alter')" class="w-full">
-            <p v-if="sortAlter === 0 " :class="{disableactive: activeTab === 'alter'}">Alternative</p>
-            <p v-else :class="{ active: activeTab === 'alter'}">Alternative</p>
-            <el-icon v-if="sortAlter === 0 " :class="{'opacity-0': activeTab === 'alter'}"><Top /></el-icon>
-            <el-icon v-else-if="sortAlter === 1 " :class="{ active: activeTab === 'alter'}"><Top /></el-icon>
-            <el-icon v-else :class="{ active: activeTab === 'alter'}"><Bottom /></el-icon>
-           </span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="idd.root" label="Character Calling Code" sortable width="140" >
-      <template #header>
-          <span @click="clickIdd(name = 'idd')" class="w-full">
-            <p v-if="iddSort === 0 " :class="{disableactive: activeTab === 'idd'}">Character Calling Code</p>
-            <p v-else :class="{ active: activeTab === 'idd'}">Character Calling Code</p>
-            <el-icon v-if="iddSort === 0 " :class="{'opacity-0': activeTab === 'idd'}"><Top /></el-icon>
-            <el-icon v-else-if="iddSort === 1 " :class="{ active: activeTab === 'idd'}"><Top /></el-icon>
-            <el-icon v-else :class="{ active: activeTab === 'idd'}"><Bottom /></el-icon>
-          </span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--Pagination-->
-    <div class="flex justify-end mb-12 mt-4">
-      <el-pagination
-      v-model:currentPage="data.page"
-      v-model:page-size="data.pageSize"
-      :page-sizes="[10, 25, 50, 250]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="data.tableData.length"/>
+  <div class="w-full absolute">
+    <div class="2xl:w-11/12 xl:w-11/12 lg:w-11/12 m-auto bg-slate-100 px-6 pb-1">
+      <el-row class="header py-8 items-center">
+        <el-col :span="6">
+          <img class="rounded-full w-14 relative" src="../assets/profile2.jpg" alt=""> 
+          <p class="absolute top-11 left-16">Thea Vannak</p> 
+        </el-col>
+        <el-col :span="12">
+          <h1 class="Pink: 300">All countries in the world</h1>
+        </el-col>
+        <el-col :span="6">
+          <el-input v-model="search" size="big" placeholder="search" type="text" style="margin-bottom: 0;"/>
+        </el-col>
+      </el-row>
+      <el-row class="rsp-header md:hidden">
+        <el-col :span="24">
+          <h1 class="Pink: 300 pb-2">All countries in the world</h1>
+        </el-col>
+        <el-col :span="12">
+          <img class="rounded-full w-14 relative" src="../assets/profile2.jpg" alt=""> 
+          <p class="absolute bottom-8 left-24">Thea Vannak</p> 
+        </el-col>
+        <el-col :span="12">
+          <el-input v-model="search" size="big" placeholder="search" type="text" style="margin-bottom: 0;"/>
+        </el-col>
+      </el-row>
+
+        <el-table 
+          :data="filterTableData"
+          @select="handleSelect"
+          style="width: 100%;"
+          
+        >
+          <el-table-column label="Flags" width="80px">
+            <template #default="scope">
+              <img class="rounded-full" :src="scope.row.flags.png" alt="">
+            </template>
+          </el-table-column>
+          <el-table-column prop="name.official" sortable >
+            <template #header>
+              <span @click="clickSort(name = 'name')" class="w-full">
+                <p v-if="arrowSort === 0 " :class="{disableactive: activeTab === 'name'}">Country Name</p>
+                <p v-else :class="{ active: activeTab === 'name'}">Country Name</p>
+                <el-icon v-if="arrowSort === 0 " :class="{'opacity-0': activeTab === 'name'}"><Top /></el-icon>
+                <el-icon v-else-if="arrowSort === 1 " :class="{ active: activeTab === 'name'}"><Top /></el-icon>
+                <el-icon v-else :class="{ active: activeTab === 'name'}"><Bottom /></el-icon>
+              </span>
+            </template>
+            <template #default="scope">
+              <div @click="onDetail(scope.row)">{{scope.row.name.official}}</div>
+          </template>  
+          </el-table-column>
+          <el-table-column prop="cca2" label="2 character Country Code" sortable >
+            <template #header>
+              <span @click="clickCCC2(name = 'country-code')" class="w-full">
+                <p v-if="sortCCC2 === 0 " :class="{disableactive: activeTab === 'country-code'}">2 character Country Code</p>
+                <p v-else :class="{ active: activeTab === 'country-code'}">2 character Country Code</p>
+                <el-icon v-if="sortCCC2 === 0 "><Top /></el-icon>
+                <el-icon v-else-if="sortCCC2 === 1 " :class="{ active: activeTab === 'country-code'}"><Top /></el-icon>
+                <el-icon v-else  :class="{ active: activeTab === 'country-code'}"><Bottom /></el-icon>
+              </span>
+            </template>
+          </el-table-column>  
+          <el-table-column prop="cca3" label="3 character Country Code" sortable >
+            <template #header>
+              <span @click="clickCCC3(name = 'country-code3')" class="w-full">
+                <p v-if="sortCCC3 === 0 " :class="{disableactive: activeTab === 'country-code3'}">3 character Country Code</p>
+                <p v-else :class="{ active: activeTab === 'country-code3'}">3 character Country Code</p>
+                <el-icon v-if="sortCCC3 === 0 " :class="{'text-blue opacity-0': activeTab === 'name'}"><Top /></el-icon>
+                <el-icon v-else-if="sortCCC3 === 1 " :class="{ active: activeTab === 'country-code3'}"><Top /></el-icon>
+                <el-icon v-else :class="{ active: activeTab === 'country-code3'}"><Bottom /></el-icon>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column label="Native Name" width="170" sortable>     
+            <!-- <template #header>
+              <span @click="clickNative(name = 'native')" class="w-full">
+                <p v-if="nativeSort === 0 " :class="{disableactive: activeTab === 'native'}">Native Name</p>
+                <p v-else :class="{ active: activeTab === 'native'}">Native Name</p>
+                <el-icon v-if="nativeSort === 0 " :class="{'text-blue opacity-0': activeTab === 'native'}"><Top /></el-icon>
+                <el-icon v-else-if="nativeSort === 1 " :class="{ active: activeTab === 'native'}"><Top /></el-icon>
+                <el-icon v-else :class="{ active: activeTab === 'native'}"><Bottom /></el-icon>
+              </span>
+            </template> -->
+            <template #default="scope" >
+              <div v-if="!scope.row.name.nativeName">--</div>
+              <div v-else>{{Object.values(scope.row.name.nativeName)[0].official}}</div>
+          </template> 
+          </el-table-column>
+          <el-table-column prop="altSpellings" label="Alternative" sortable >
+            <template #header>
+              <span @click="clickAlter(name = 'alter')" class="w-full">
+                <p v-if="sortAlter === 0 " :class="{disableactive: activeTab === 'alter'}">Alternative</p>
+                <p v-else :class="{ active: activeTab === 'alter'}">Alternative</p>
+                <el-icon v-if="sortAlter === 0 " :class="{'opacity-0': activeTab === 'alter'}"><Top /></el-icon>
+                <el-icon v-else-if="sortAlter === 1 " :class="{ active: activeTab === 'alter'}"><Top /></el-icon>
+                <el-icon v-else :class="{ active: activeTab === 'alter'}"><Bottom /></el-icon>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="idd.root" label="Character Calling Code" sortable width="150" >
+          <template #header>
+              <span @click="clickIdd(name = 'idd')" class="w-full">
+                <p v-if="iddSort === 0 " :class="{disableactive: activeTab === 'idd'}">Character Calling Code</p>
+                <p v-else :class="{ active: activeTab === 'idd'}">Character Calling Code</p>
+                <el-icon v-if="iddSort === 0 " :class="{'opacity-0': activeTab === 'idd'}"><Top /></el-icon>
+                <el-icon v-else-if="iddSort === 1 " :class="{ active: activeTab === 'idd'}"><Top /></el-icon>
+                <el-icon v-else :class="{ active: activeTab === 'idd'}"><Bottom /></el-icon>
+              </span>
+            </template>
+          </el-table-column>
+        </el-table>
+      <!--Pagination-->
+      <div class="flex justify-end mb-12 mt-4">
+        <el-pagination
+        v-model:currentPage="data.page"
+        v-model:page-size="data.pageSize"
+        :page-sizes="[10, 25, 50, 250]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="data.tableData.length"/>
+      </div>
     </div>
   </div>
   <!--Dialog Pop up-->
@@ -368,7 +384,7 @@ export default {
     const data = ref({
       tableData: [],
       page: 1,
-      pageSize: 25,
+      pageSize: 10,
     })
     const getData = () => {
       axios.get('https://restcountries.com/v3.1/all')
@@ -470,10 +486,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.wrap{
-  width: 90%;
-  margin: 0 auto;
-}
 h1{
   font-weight: bold;
   font-size: 20px;
@@ -489,7 +501,7 @@ h1{
 }
 :deep(.el-table th.el-table__cell){
   color: #333;
-  background-color: #eef2f7;
+  background-color: #dee6f0;
 }
 .el-table__cell img{
   width: 50px;
@@ -512,7 +524,7 @@ h1{
 }
 .el-table .cell .el-icon {
   width: 100%;
-  top: 7px;
+  top: calc(50% - 24px);
   right: 0;
   padding: 25px 20px 25px 0px;
   opacity: 0;
@@ -541,5 +553,25 @@ i.el-icon.el-icon--left{
 }
 .el-id-7293-260{
   padding-top: 0;
+}
+@media (max-width: 768px) {
+  :deep(.el-table__header,.el-table__body){
+    width: auto !important;
+  }
+  :deep(.el-table__body){
+    width: auto !important;
+  }
+  .el-input{
+    width: auto;
+  }
+  .header{
+    display: none;
+    
+  }
+  .rsp-header{
+    padding: 20px ;
+    display: flex;
+    align-items: center;
+  }
 }
 </style>
