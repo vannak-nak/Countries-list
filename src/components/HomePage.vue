@@ -32,12 +32,12 @@
           style="width: 100%;"
           
         >
-          <el-table-column label="Flags" width="80px">
+          <el-table-column label="Flags" min-width="180" width="80">
             <template #default="scope">
               <img class="rounded-full" :src="scope.row.flags.png" alt="">
             </template>
           </el-table-column>
-          <el-table-column prop="name.official" sortable >
+          <el-table-column prop="name.official" sortable min-width="180">
             <template #header>
               <span @click="clickSort(name = 'name')" class="w-full">
                 <p v-if="arrowSort === 0 " :class="{disableactive: activeTab === 'name'}">Country Name</p>
@@ -51,7 +51,7 @@
               <div @click="onDetail(scope.row)">{{scope.row.name.official}}</div>
           </template>  
           </el-table-column>
-          <el-table-column prop="cca2" label="2 character Country Code" sortable >
+          <el-table-column prop="cca2" label="2 character Country Code" sortable min-width="180" >
             <template #header>
               <span @click="clickCCC2(name = 'country-code')" class="w-full">
                 <p v-if="sortCCC2 === 0 " :class="{disableactive: activeTab === 'country-code'}">2 character Country Code</p>
@@ -62,7 +62,7 @@
               </span>
             </template>
           </el-table-column>  
-          <el-table-column prop="cca3" label="3 character Country Code" sortable >
+          <el-table-column prop="cca3" label="3 character Country Code" sortable min-width="180">
             <template #header>
               <span @click="clickCCC3(name = 'country-code3')" class="w-full">
                 <p v-if="sortCCC3 === 0 " :class="{disableactive: activeTab === 'country-code3'}">3 character Country Code</p>
@@ -88,7 +88,7 @@
               <div v-else>{{Object.values(scope.row.name.nativeName)[0].official}}</div>
           </template> 
           </el-table-column>
-          <el-table-column prop="altSpellings" label="Alternative" sortable >
+          <el-table-column prop="altSpellings" label="Alternative" sortable  min-width="180">
             <template #header>
               <span @click="clickAlter(name = 'alter')" class="w-full">
                 <p v-if="sortAlter === 0 " :class="{disableactive: activeTab === 'alter'}">Alternative</p>
@@ -99,7 +99,7 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="idd.root" label="Character Calling Code" sortable width="150" >
+          <el-table-column prop="idd.root" label="Character Calling Code" sortable min-width="135">
           <template #header>
               <span @click="clickIdd(name = 'idd')" class="w-full">
                 <p v-if="iddSort === 0 " :class="{disableactive: activeTab === 'idd'}">Character Calling Code</p>
@@ -123,7 +123,7 @@
     </div>
   </div>
   <!--Dialog Pop up-->
-  <el-dialog v-model="dialogTableVisible" :show-close="false">    
+  <el-dialog v-model="dialogTableVisible" :show-close="false" class="w-[90%] md:w-[60%]">    
     <template #header="{ close, titleId, titleClass }">
       <div class="my-header bg-sky-500 p-2.5">
         <h4 :id="titleId" :class="titleClass">Detail Information</h4>
@@ -555,15 +555,7 @@ i.el-icon.el-icon--left{
   padding-top: 0;
 }
 @media (max-width: 768px) {
-  :deep(.el-table__header,.el-table__body){
-    width: auto !important;
-  }
-  :deep(.el-table__body){
-    width: auto !important;
-  }
-  .el-input{
-    width: auto;
-  }
+ 
   .header{
     display: none;
     
